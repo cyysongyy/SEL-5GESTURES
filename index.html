@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>✨ 辰光共同語言：SEL 勇者傳說 ✨</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         @keyframes rainbowFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes shine { to { background-position: 200% center; } }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        
+        @keyframes tada { 0% {transform: scale(1);} 10%, 20% {transform: scale(0.9) rotate(-3deg);} 30%, 50%, 70%, 90% {transform: scale(1.1) rotate(3deg);} 40%, 60%, 80% {transform: scale(1.1) rotate(-3deg);} 100% {transform: scale(1) rotate(0);} }
+
         body {
             font-family: 'Microsoft JhengHei', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; align-items: center; min-height: 100vh;
             background: linear-gradient(-45deg, #ff00ff, #ff8c00, #00ffff, #32cd32); background-size: 400% 400%; animation: rainbowFlow 15s ease infinite; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); overflow-x: hidden;
         }
 
-        #box { width: 100%; max-width: 600px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px); padding: 30px; border: 6px solid #fbc02d; border-radius: 30px; box-shadow: 0 0 40px rgba(251, 192, 45, 0.8); text-align: center; box-sizing: border-box; }
+        #box { width: 100%; max-width: 600px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(15px); padding: 30px; border: 6px solid #fbc02d; border-radius: 30px; box-shadow: 0 0 50px rgba(251, 192, 45, 1); text-align: center; box-sizing: border-box; }
 
         h1 {
             font-size: 42px; background: linear-gradient(to right, #fbc02d, #ffffff, #fbc02d); background-size: 200% auto;
@@ -25,20 +26,20 @@
         .active { display: inline-block; animation: zoomIn 0.5s ease; }
         @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        #story { font-size: 24px; background: rgba(255, 255, 255, 0.15); padding: 20px; border-radius: 15px; margin: 20px 0; line-height: 1.6; border-left: 10px solid #fbc02d; text-align: left; min-height: 90px; }
+        #story { font-size: 24px; background: rgba(255, 255, 255, 0.15); padding: 20px; border-radius: 15px; margin: 20px 0; line-height: 1.6; border-left: 10px solid #fbc02d; text-align: left; }
 
         .btn {
             width: 100%; padding: 16px; margin: 10px 0; font-size: 22px; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s;
             background: linear-gradient(90deg, #ff00ff, #00ffff); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
-        .btn:hover { transform: scale(1.05) translateY(-3px); box-shadow: 0 0 25px #fff; }
-        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 25px #fff; }
+        .btn:disabled { opacity: 0.8; }
+
+        #feedback { font-size: 36px; margin-top: 15px; min-height: 50px; font-weight: bold; }
+        .celebrate-text { animation: tada 1s; color: #ffff00; text-shadow: 0 0 10px #fff; }
 
         .nav-group { display: flex; justify-content: space-between; margin-top: 20px; }
         .nav-btn { width: 48%; background: #fbc02d; color: #333; font-size: 18px; border-radius: 15px; font-weight: bold; }
-
-        .stats { display: flex; justify-content: space-between; font-size: 20px; color: #ffff00; font-weight: bold; margin-bottom: 15px; }
-        #feedback { font-size: 32px; margin-top: 15px; min-height: 45px; animation: bounce 1s infinite; }
     </style>
 </head>
 <body>
@@ -47,14 +48,14 @@
     <h1>✨ 辰光共同語言 ✨</h1>
 
     <div id="login-ui">
-        <p style="font-size: 22px;">勇者請報上名來（班級學號）：</p>
-        <input type="text" id="sid" style="padding:15px; width:80%; font-size:20px; border-radius:12px; border:none; text-align:center;" placeholder="例如: 30105">
+        <p style="font-size: 22px;">勇者學號：</p>
+        <input type="text" id="sid" style="padding:15px; width:80%; font-size:22px; border-radius:12px; border:none; text-align:center;">
         <br><br>
-        <button class="btn" onclick="startGame()">開啟 50 關挑戰 🚩</button>
+        <button class="btn" onclick="startGame()">開始 50 關挑戰 🚩</button>
     </div>
 
     <div id="game-ui" style="display:none;">
-        <div class="stats">
+        <div style="display:flex; justify-content:space-between; font-size:20px; color:#ffff00; font-weight:bold;">
             <span>進度: <span id="progress">0</span> / 50</span>
             <span>積分: <span id="score">0</span> 🏆</span>
         </div>
@@ -78,32 +79,25 @@
 <script>
     let sid, score = 0, currentIdx = 0, questions = [];
     
-    // === 歡慶與錯誤音效 ===
-    const sndWin = new Audio('https://actions.google.com/sounds/v1/human_voices/applause.ogg'); // 歡呼聲
-    const sndCorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/clink_pizzicato.ogg'); // 叮咚聲
-    const sndWrong = new Audio('https://actions.google.com/sounds/v1/cartoon/boing.ogg'); // 彈簧聲
+    // === 預加載歡慶與錯誤音效 ===
+    // 使用 Google 提供的穩定音效連結
+    const sndCorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/clink_pizzicato.ogg');
+    const sndCelebrate = new Audio('https://actions.google.com/sounds/v1/human_voices/applause.ogg');
+    const sndWrong = new Audio('https://actions.google.com/sounds/v1/cartoon/boing.ogg');
 
     const db = [
         { s: "大家吵成一團，教室快爆炸了，希望大家安靜下來，要比？", c: 0, img: "img-silence" },
         { s: "老師問了問題，你腦中有個好棒的答案，我有話要說時？", c: 1, img: "img-words" },
-        { s: "老師說：『看我看我！』要大家專心聽我說話，該比？", c: 2, img: "img-eyes" },
+        { s: "老師說：『看我看我！』要大家專心聽老師說話，該比？", c: 2, img: "img-eyes" },
         { s: "被同學誤會了，心裡酸酸的，目前不想說話，你可以比？", c: 3, img: "img-emotion" },
         { s: "圖書館有人在追逐，想提醒大家安靜，要施展魔法？", c: 0, img: "img-silence" },
         { s: "聽不懂數學公式，想要舉手請教老師問題，你要比？", c: 1, img: "img-words" },
         { s: "台上同學正在演講，我們要給予專注的禮貌，手勢是？", c: 2, img: "img-eyes" },
         { s: "考試考砸了，覺得好沮喪，想讓自己冷靜且暫不想說話？", c: 3, img: "img-emotion" },
-        { s: "升旗典禮廣播開始，全班應該立刻靜止，並比出？", c: 0, img: "img-silence" },
-        { s: "你想跟校長打招呼，爭取發言機會，手勢是？", c: 1, img: "img-words" },
-        { s: "老師在黑板畫重點，提醒大家：『眼睛看過來』？", c: 2, img: "img-eyes" },
-        { s: "好朋友今天不理你，你覺得很不安，想摸摸胸口觀察情緒？", c: 3, img: "img-emotion" },
-        { s: "走廊有人在大聲叫喊，影響到午睡，請比出？", c: 0, img: "img-silence" },
-        { s: "你有一個新遊戲想推薦給全班，爭取說話機會時？", c: 1, img: "img-words" },
-        { s: "看電視教學影片時，大家眼神要專注，請比？", c: 2, img: "img-eyes" },
-        { s: "覺得今天壓力好大，心跳好快，想暫時安靜不說話？", c: 3, img: "img-emotion" },
-        { s: "校園內遇到外賓參觀，想提醒同學保持禮貌安靜？", c: 0, img: "img-silence" },
-        { s: "發現教室燈沒關，想自願幫忙關燈，發言前請先？", c: 1, img: "img-words" },
-        { s: "老師說：『注意聽，等等要宣佈遠足地點！』？", c: 2, img: "img-eyes" },
-        { s: "練習 BTT 魔法的第一步：摸摸胸口，感覺目前的情緒？", c: 3, img: "img-emotion" }
+        { s: "校長廣播重要訊息，全班應該立刻靜止，並比出？", c: 0, img: "img-silence" },
+        { s: "你想跟老師打招呼，爭取發言機會，手勢是？", c: 1, img: "img-words" },
+        { s: "老師在黑板畫重點，提醒大家：『眼神看過來』？", c: 2, img: "img-eyes" },
+        { s: "心情悶悶的，想摸摸胸口觀察情緒，手勢是？", c: 3, img: "img-emotion" }
     ];
 
     while(db.length < 50) { db.push(...db.slice(0, 50 - db.length)); }
@@ -113,6 +107,8 @@
     function startGame() {
         sid = document.getElementById('sid').value;
         if(!sid) return alert("請輸入學號！");
+        // 觸發一次音效解鎖（手機瀏覽器需要）
+        sndCorrect.play(); sndCorrect.pause();
         document.getElementById('login-ui').style.display='none';
         document.getElementById('game-ui').style.display='block';
         questions = db.sort(() => Math.random() - 0.5).slice(0, 50);
@@ -124,6 +120,7 @@
         document.getElementById('progress').innerText = currentIdx + 1;
         document.getElementById('story').innerText = q.s;
         document.getElementById('feedback').innerText = "";
+        document.getElementById('feedback').classList.remove('celebrate-text');
         document.getElementById('nextBtn').style.visibility = "hidden";
         
         document.querySelectorAll('.gesture-img').forEach(i => i.classList.remove('active'));
@@ -144,16 +141,28 @@
         if(pick === correct) {
             score += 20;
             document.getElementById('score').innerText = score;
-            document.getElementById('feedback').innerText = "🎉 答對了！太棒了！ 🎊";
+            document.getElementById('feedback').innerText = "🎊 答對了！太棒了 🎊";
+            document.getElementById('feedback').classList.add('celebrate-text');
+            
+            // 播放音效
             sndCorrect.play();
-            sndWin.play(); // 播放慶祝聲音
+            sndCelebrate.play();
+
+            // 噴灑五彩紙屑效果
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff00ff', '#00ffff', '#ffff00', '#ffffff']
+            });
+
             btns.forEach(b => {
                 b.disabled = true;
                 if(b.innerText === options[correct]) b.style.background = "#4caf50";
             });
             document.getElementById('nextBtn').style.visibility = "visible";
         } else {
-            document.getElementById('feedback').innerText = "❌ 差一點點，再想一下！";
+            document.getElementById('feedback').innerText = "❌ 再想一下喔！";
             sndWrong.play();
         }
     }
@@ -165,13 +174,14 @@
     }
 
     function finish() {
-        sndWin.play();
+        sndCelebrate.play();
+        confetti({ particleCount: 300, spread: 100, origin: { y: 0.5 } });
         document.getElementById('game-ui').innerHTML = `
-            <div style="font-size:80px">🏅</div>
-            <h2>大滿貫！辰光勇者傳說達成！</h2>
-            <p>你是最了解辰光共同語言的小英雄！</p>
-            <div style="font-size:36px; color:#ffff00; margin:20px 0;">最終積分：${score}🏆</div>
-            <button class="btn" onclick="location.reload()">回首頁重新挑戰</button>
+            <div style="font-size:100px">🏆</div>
+            <h2 class="celebrate-text">大滿貫！勇者達成！</h2>
+            <p>恭喜學號 ${sid} 完成辰光共同語言挑戰！</p>
+            <div style="font-size:36px; color:#ffff00; margin:20px 0;">總積分：${score}</div>
+            <button class="btn" onclick="location.reload()">再玩一次 🔄</button>
         `;
     }
 </script>
