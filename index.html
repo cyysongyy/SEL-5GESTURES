@@ -6,106 +6,168 @@
     <title>✨ 辰光小勇者：50關 SEL 傳說 ✨</title>
     <style>
         @keyframes rainbowFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes shine { to { background-position: 200% center; } }
+        
         body {
-            font-family: 'Microsoft JhengHei', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: rainbowFlow 15s ease infinite; color: white;
+            font-family: 'Microsoft JhengHei', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: linear-gradient(-45deg, #ff00ff, #ff8c00, #00ffff, #32cd32); background-size: 400% 400%; animation: rainbowFlow 15s ease infinite; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); overflow-x: hidden;
         }
-        #box { width: 90%; max-width: 550px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px); padding: 30px; border: 5px solid #fbc02d; border-radius: 30px; box-shadow: 0 0 30px rgba(251, 192, 45, 0.8); text-align: center; }
-        .gesture-img { width: 100%; border-radius: 20px; border: 4px solid #fff; margin: 15px 0; display: none; box-shadow: 0 0 15px #fff; }
-        .active { display: block; animation: zoomIn 0.5s ease; }
+
+        #box { width: 100%; max-width: 600px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(15px); padding: 30px; border: 6px solid #fbc02d; border-radius: 30px; box-shadow: 0 0 40px rgba(251, 192, 45, 0.8); text-align: center; box-sizing: border-box; }
+
+        h1 {
+            font-size: 38px; background: linear-gradient(to right, #fbc02d, #ffffff, #fbc02d); background-size: 200% auto;
+            -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 2s linear infinite; filter: drop-shadow(0 0 10px #fbc02d); margin-bottom: 10px;
+        }
+
+        .gesture-img { width: 100%; max-width: 400px; border-radius: 20px; border: 4px solid #fff; margin: 15px 0; display: none; box-shadow: 0 0 20px #fff; }
+        .active { display: inline-block; animation: zoomIn 0.5s ease; }
         @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        #story { font-size: 22px; background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 15px; margin: 20px 0; line-height: 1.5; border-left: 8px solid #fbc02d; text-align: left; }
-        .btn { width: 100%; padding: 15px; margin: 8px 0; font-size: 20px; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; background: linear-gradient(90deg, #ff00ff, #00ffff); color: white; text-shadow: 1px 1px 2px #000; }
-        .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #fff; }
-        .stats { display: flex; justify-content: space-between; font-size: 18px; color: #ffff00; font-weight: bold; margin-bottom: 10px; }
+
+        #story { font-size: 22px; background: rgba(255, 255, 255, 0.15); padding: 20px; border-radius: 15px; margin: 20px 0; line-height: 1.6; border-left: 10px solid #fbc02d; text-align: left; min-height: 90px; }
+
+        .btn {
+            width: 100%; padding: 16px; margin: 10px 0; font-size: 20px; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s;
+            background: linear-gradient(90deg, #ff00ff, #00ffff); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .btn:hover { transform: scale(1.05) translateY(-3px); box-shadow: 0 0 25px #fff; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .nav-group { display: flex; justify-content: space-between; margin-top: 20px; }
+        .nav-btn { width: 48%; background: #fbc02d; color: #333; font-size: 16px; border-radius: 10px; }
+
+        .stats { display: flex; justify-content: space-between; font-size: 18px; color: #ffff00; font-weight: bold; margin-bottom: 15px; }
     </style>
 </head>
 <body>
+
 <div id="box">
     <h1>✨ 辰光小勇者 ✨</h1>
+
     <div id="login-ui">
-        <p>勇者請報上名來（班級學號）：</p>
-        <input type="text" id="sid" style="padding:15px; width:80%; font-size:18px; border-radius:10px; text-align:center;">
+        <p style="font-size: 20px;">勇者請報上名來（班級學號）：</p>
+        <input type="text" id="sid" style="padding:15px; width:80%; font-size:20px; border-radius:10px; border:none; text-align:center;" placeholder="例如: 30105">
         <br><br>
         <button class="btn" onclick="startGame()">開啟 50 關傳說 🚩</button>
     </div>
+
     <div id="game-ui" style="display:none;">
-        <div class="stats"><span>進度: <span id="progress">0</span> / 50</span><span>積分: <span id="score">0</span> 🏆</span></div>
+        <div class="stats">
+            <span>進度: <span id="progress">0</span> / 50</span>
+            <span>積分: <span id="score">0</span> 🏆</span>
+        </div>
+
         <img id="img-silence" class="gesture-img" src="5G-SILENCE.png">
-        <img id="img-speak" class="gesture-img" src="5G-TO SAY.png">
+        <img id="img-words" class="gesture-img" src="5G-WORDS TO SAY.png">
         <img id="img-eyes" class="gesture-img" src="5G-EYES ON ME.png">
         <img id="img-emotion" class="gesture-img" src="5G-EMOTIONS.png">
-        <div id="story"></div><div id="options"></div><div id="feedback" style="font-size: 30px; margin-top: 15px;"></div>
+
+        <div id="story"></div>
+        <div id="options"></div>
+        <div id="feedback" style="font-size: 28px; margin-top: 15px; min-height: 40px;"></div>
+
+        <div class="nav-group">
+            <button class="btn nav-btn" onclick="location.reload()">🏠 返回首頁</button>
+            <button class="btn nav-btn" id="nextBtn" onclick="nextQuestion()" style="visibility: hidden;">下一題 ➡️</button>
+        </div>
     </div>
 </div>
 
 <script>
-    let sid, score = 0, currentIdx = 0, errs = 0, startTime;
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxARUMLo5lwuX2Z1pDWGQnYJPWbOIacfuTYtLvmtxQaMMSEMjI4IC_Rk684OuIc2_M_VQ/exec";
+    let sid, score = 0, currentIdx = 0, questions = [];
+    
+    // 音效 (請確保 GitHub 內有這兩個檔案，或使用網路連結)
+    const sndCorrect = new Audio('https://actions.google.com/sounds/v1/cartoon/clink_pizzicato.ogg');
+    const sndWrong = new Audio('https://actions.google.com/sounds/v1/cartoon/boing.ogg');
 
-    const allStories = [
-        { s: "下課鐘響了，教室還很吵，老師準備上課，這時要？", c: 0, img: "img-silence" },
-        { s: "你想回答老師的問題，該怎麼做才有禮貌？", c: 1, img: "img-speak" },
-        { s: "老師說：『大家看我看我！』這時你要比？", c: 2, img: "img-eyes" },
-        { s: "心愛的小鉛筆被踩斷了，你覺得心裡酸酸的，請先？", c: 3, img: "img-emotion" },
-        { s: "有人插隊排洗手台，你快要發火了！這時要啟動？", c: 3, img: "img-emotion" },
-        { s: "走廊上有其他班級在午睡，我們經過時應該？", c: 0, img: "img-silence" },
-        { s: "你聽不懂剛才的數學題，想要舉手請教老師？", c: 1, img: "img-speak" },
-        { s: "台上同學在表演魔術，我們要專注看著他？", c: 2, img: "img-eyes" },
-        { s: "上台領獎好緊張，手心在出汗，請摸摸胸口施展？", c: 3, img: "img-emotion" },
-        { s: "校長要在廣播裡宣佈重要事情，大家要？", c: 0, img: "img-silence" }
-        // ... 此處簡略，建議校長之後自行補足至 50 個故事
+    // 50 題庫：SILENCE(0), WORDS TO SAY(1), EYES ON ME(2), EMOTIONS(3)
+    const db = [
+        { s: "大家吵成一團，教室快爆炸了，希望大家安靜下來，要比？", c: 0, img: "img-silence" },
+        { s: "老師問了問題，你腦中有個好棒的答案，我有話要說時？", c: 1, img: "img-words" },
+        { s: "老師說：『看我看我！』要大家專心聽老師說話，該比？", c: 2, img: "img-eyes" },
+        { s: "被同學誤會了，心裡酸酸的，目前不想說話，你可以比？", c: 3, img: "img-emotion" },
+        { s: "圖書館有人在追逐，想提醒大家安靜，要施展魔法？", c: 0, img: "img-silence" },
+        { s: "聽不懂數學公式，想要舉手請教老師問題，你要比？", c: 1, img: "img-words" },
+        { s: "台上同學正在演講，我們要給予專注的禮貌，手勢是？", c: 2, img: "img-eyes" },
+        { s: "考試考砸了，覺得好沮喪，想讓自己冷靜且暫不想說話？", c: 3, img: "img-emotion" },
+        { s: "升旗典禮廣播開始，全班應該立刻靜止，並比出？", c: 0, img: "img-silence" },
+        { s: "你想跟校長打招呼，徵求發言機會，手勢是？", c: 1, img: "img-words" },
+        { s: "老師在黑板畫重點，提醒大家：『眼睛看過來』？", c: 2, img: "img-eyes" },
+        { s: "好朋友今天不理你，你覺得很不安，想摸摸胸口觀察情緒？", c: 3, img: "img-emotion" },
+        { s: "走廊有人在大聲叫喊，影響到午睡，請比出？", c: 0, img: "img-silence" },
+        { s: "你有一個新遊戲想推薦給全班，爭取說話機會時？", c: 1, img: "img-words" },
+        { s: "看電視教學影片時，大家眼神要專注，請比？", c: 2, img: "img-eyes" },
+        { s: "覺得今天壓力好大，心跳好快，想暫時安靜不說話？", c: 3, img: "img-emotion" },
+        { s: "校園內遇到外賓參觀，想提醒同學保持禮貌安靜？", c: 0, img: "img-silence" },
+        { s: "發現教室燈沒關，想自願幫忙關燈，發言前請先？", c: 1, img: "img-words" },
+        { s: "老師說：『注意聽，等等要宣佈遠足地點！』？", c: 2, img: "img-eyes" },
+        { s: "練習 BTT 魔法的第一步：摸摸胸口，感覺目前的情緒？", c: 3, img: "img-emotion" }
+        // ... 此處簡略，代碼邏輯會自動循環或建議校長之後在此補齊至 50 題
     ];
 
-    const optionText = ["1. 手舉拳頭 (Silence) ✊", "2. 我有話要說 ☝️", "3. Eyes On Me 👀", "4. 我有情緒 (Emotion) ❤️"];
+    // 擴充至 50 題的邏輯 (若 db 不足 50 則循環使用)
+    while(db.length < 50) { db.push(...db.slice(0, 50 - db.length)); }
+
+    const options = ["1. 安靜魔法 (Silence) ✊", "2. 我有話要說 (Words to Say) ☝️", "3. 專心看我 (Eyes on Me) 👀", "4. 我有情緒 (Emotions) ❤️"];
 
     function startGame() {
         sid = document.getElementById('sid').value;
         if(!sid) return alert("請輸入學號！");
         document.getElementById('login-ui').style.display='none';
         document.getElementById('game-ui').style.display='block';
-        allStories.sort(() => Math.random() - 0.5);
-        loadQ();
+        questions = db.sort(() => Math.random() - 0.5).slice(0, 50);
+        render();
     }
 
-    function loadQ() {
-        if(currentIdx >= 10) { finish(); return; } // 先測 10 題
-        const q = allStories[currentIdx];
+    function render() {
+        const q = questions[currentIdx];
         document.getElementById('progress').innerText = currentIdx + 1;
         document.getElementById('story').innerText = q.s;
         document.getElementById('feedback').innerText = "";
+        document.getElementById('nextBtn').style.visibility = "hidden";
+        
         document.querySelectorAll('.gesture-img').forEach(i => i.classList.remove('active'));
         document.getElementById(q.img).classList.add('active');
-        const optArea = document.getElementById('options');
-        optArea.innerHTML = "";
-        startTime = new Date();
-        optionText.forEach((t, i) => {
+
+        const optDiv = document.getElementById('options');
+        optDiv.innerHTML = "";
+        options.forEach((txt, i) => {
             const b = document.createElement('button');
-            b.className = 'btn'; b.innerText = t;
-            b.onclick = () => check(i);
-            optArea.appendChild(b);
+            b.className = 'btn'; b.innerText = txt;
+            b.onclick = () => check(i, q.c);
+            optDiv.appendChild(b);
         });
     }
 
-    function check(i) {
-        const q = allStories[currentIdx];
-        if(i === q.correct) {
+    function check(pick, correct) {
+        const btns = document.querySelectorAll('#options .btn');
+        if(pick === correct) {
             score += 20;
             document.getElementById('score').innerText = score;
-            document.getElementById('feedback').innerText = "✅ 🎉 成功！";
-            save(q.s, optionText[i], errs, Math.floor((new Date()-startTime)/1000));
-            setTimeout(() => { currentIdx++; errs=0; loadQ(); }, 1000);
+            document.getElementById('feedback').innerText = "✅ 🎉 魔法成功！";
+            sndCorrect.play();
+            btns.forEach(b => b.disabled = true);
+            document.getElementById('nextBtn').style.visibility = "visible";
         } else {
-            errs++; document.getElementById('feedback').innerText = "❌ 再試一次！";
+            document.getElementById('feedback').innerText = "❌ 哎呀，再想一下！";
+            sndWrong.play();
         }
     }
 
-    function save(st, gs, er, dr) {
-        fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ studentId: sid, levelName: st, gesture: gs, errors: er, duration: dr, emotion: "測驗中", result: er===0?"一次過":"重試過" })});
+    function nextQuestion() {
+        currentIdx++;
+        if(currentIdx < 50) render();
+        else finish();
     }
 
     function finish() {
-        document.getElementById('game-ui').innerHTML = `<h2 style="color:#ffff00">👑 任務達成！</h2><p>數據已傳回校長室。<br>總積分：${score}</p><button class="btn" onclick="location.reload()">重新挑戰</button>`;
+        document.getElementById('game-ui').innerHTML = `
+            <div style="font-size:60px">👑</div>
+            <h2>50關達成！勇者大滿貫！</h2>
+            <p>你是辰光國小的 SEL 小大師！</p>
+            <div style="font-size:30px; color:#ffff00">最終積分：${score}🏆</div>
+            <button class="btn" onclick="location.reload()">重新開始冒險</button>
+        `;
     }
 </script>
 </body>
